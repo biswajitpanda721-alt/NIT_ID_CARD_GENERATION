@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NIT Bhubaneswar — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary:#FF6B35;--secondary:#F7931E;--dark:#1A1A2E;--darker:#0f0f1a;
+      --sidebar:#16213E;--card:#1e2a45;--input:rgba(255,255,255,0.06);
+      --brd:rgba(255,107,53,0.25);--brds:rgba(255,255,255,0.08);
+      --txt:#f0f0f0;--muted:#8a9bb0;--ok:#4CAF50;--err:#f44336;
+      --warn:#FF9800;--info:#2196F3;--sw:260px;--hh:64px;--r:12px;
+      --glow:0 0 20px rgba(255,107,53,0.2);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif;background:var(--darker);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+    /* LAYOUT */
+    .app{display:flex;min-height:100vh}
+
+    /* SIDEBAR */
+    .sb{width:var(--sw);background:var(--sidebar);border-right:1px solid var(--brds);
+      position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;
+      display:flex;flex-direction:column;transition:transform .3s}
+    .sb-logo{padding:20px;border-bottom:1px solid var(--brds);display:flex;align-items:center;gap:12px}
+    .sb-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .sb-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;line-height:1.2}
+    .sb-sub{font-size:11px;color:var(--muted);letter-spacing:1px}
+    .nav-sec{padding:12px 10px;flex:1}
+    .nav-lbl{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+      padding:8px 10px 4px;font-weight:600}
+    .ni{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+      color:var(--muted);cursor:pointer;transition:all .2s;margin-bottom:2px;
+      font-size:14px;font-weight:500;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+    .ni i{width:18px;text-align:center;font-size:15px}
+    .ni:hover{background:rgba(255,107,53,0.1);color:#fff}
+    .ni.on{background:linear-gradient(135deg,rgba(255,107,53,0.2),rgba(247,147,30,0.1));
+      color:var(--primary);border-left:3px solid var(--primary)}
+    .sb-foot{padding:16px;border-top:1px solid var(--brds)}
+    .uchip{display:flex;align-items:center;gap:10px;padding:10px 12px;
+      background:var(--input);border-radius:10px}
+    .uav{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:700;font-family:'Rajdhani',sans-serif}
+    .uname{font-size:13px;font-weight:600;color:#fff}
+    .urole{font-size:11px;color:var(--muted)}
+    .lout{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px}
+    .lout:hover{color:var(--err)}
+
+    /* MAIN */
+    .main{margin-left:var(--sw);flex:1;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{height:var(--hh);background:rgba(22,33,62,0.8);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--brds);display:flex;align-items:center;
+      justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+    .bc{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff}
+    .top-acts{display:flex;align-items:center;gap:12px}
+    .top-badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+      background:rgba(76,175,80,0.15);color:var(--ok);border:1px solid rgba(76,175,80,0.3)}
+    .content{padding:24px;flex:1}
+
+    /* PAGES */
+    .pg{display:none}.pg.on{display:block}
+
+    /* STAT GRID */
+    .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+    .sc{background:var(--card);border:1px solid var(--brds);border-radius:var(--r);padding:20px;
+      display:flex;align-items:center;gap:16px;transition:transform .2s,box-shadow .2s}
+    .sc:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+    .sic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .sic.or{background:rgba(255,107,53,0.15);color:var(--primary)}
+    .sic.gr{background:rgba(76,175,80,0.15);color:var(--ok)}
+    .sic.bl{background:rgba(33,150,243,0.15);color:var(--info)}
+    .sic.yl{background:rgba(255,152,0,0.15);color:var(--warn)}
+    .sic.pu{background:rgba(156,39,176,0.15);color:#9C27B0}
+    .sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#fff}
+    .sl{font-size:12px;color:var(--muted);margin-top:2px}
+
+    /* SECTION BOX */
+    .box{background:var(--card);border:1px solid var(--brds);border-radius:var(--r);
+      margin-bottom:20px;overflow:hidden}
+    .bh{padding:16px 20px;border-bottom:1px solid var(--brds);display:flex;
+      align-items:center;justify-content:space-between}
+    .bh h3{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#fff}
+    .bb{padding:20px}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:none;
+      border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;
+      font-family:'DM Sans',sans-serif}
+    .bp{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .bp:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(255,107,53,0.4)}
+    .bs{background:rgba(76,175,80,0.2);color:var(--ok);border:1px solid rgba(76,175,80,0.3)}
+    .bs:hover{background:rgba(76,175,80,0.3)}
+    .bd{background:rgba(244,67,54,0.2);color:var(--err);border:1px solid rgba(244,67,54,0.3)}
+    .bd:hover{background:rgba(244,67,54,0.3)}
+    .bi{background:rgba(33,150,243,0.2);color:var(--info);border:1px solid rgba(33,150,243,0.3)}
+    .bi:hover{background:rgba(33,150,243,0.3)}
+    .sm{padding:6px 12px;font-size:12px}
+
+    /* TABLE */
+    .tw{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--brds)}
+    th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+      font-weight:600;background:rgba(255,255,255,0.02)}
+    td{font-size:13px}
+    tr:hover td{background:rgba(255,107,53,0.04)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+    .b-ok{background:rgba(76,175,80,0.15);color:var(--ok)}
+    .b-err{background:rgba(244,67,54,0.15);color:var(--err)}
+    .b-warn{background:rgba(255,152,0,0.15);color:var(--warn)}
+    .b-info{background:rgba(33,150,243,0.15);color:var(--info)}
+    .b-pu{background:rgba(156,39,176,0.15);color:#9C27B0}
+    .b-or{background:rgba(255,107,53,0.15);color:var(--primary)}
+
+    /* SEARCH */
+    .sbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .siw{position:relative;flex:1;min-width:200px}
+    .siw i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .siw input{padding-left:36px;width:100%}
+    input,select,textarea{padding:11px 14px;background:var(--input);border:1px solid var(--brds);
+      border-radius:8px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;
+      outline:none;transition:border-color .2s,box-shadow .2s}
+    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,53,0.1)}
+    select option{background:#1e2a45}
+
+    /* ID CARD PREVIEW */
+    .cp{display:flex;justify-content:center;padding:20px}
+    .idc{width:320px;height:200px;
+      background:linear-gradient(135deg,#1A1A2E 0%,#16213E 60%,#0F3460 100%);
+      border-radius:16px;padding:20px;position:relative;overflow:hidden;
+      box-shadow:0 20px 40px rgba(0,0,0,0.5),var(--glow);
+      border:1px solid rgba(255,107,53,0.3)}
+    .idc::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;
+      border-radius:50%;background:radial-gradient(circle,rgba(255,107,53,0.15),transparent 70%)}
+    .idc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .idc-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .idc-inst{font-family:'Rajdhani',sans-serif}
+    .idc-inst .in{font-size:11px;font-weight:700;color:#fff;letter-spacing:.5px}
+    .idc-inst .is{font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:1px}
+    .idc-body{display:flex;gap:14px}
+    .idc-ph{width:60px;height:72px;border-radius:8px;border:2px solid rgba(255,107,53,0.5);
+      object-fit:cover;background:rgba(255,255,255,0.1);
+      display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);flex-shrink:0}
+    .idc-ph img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+    .idc-det{flex:1}
+    .idc-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff}
+    .idc-role{font-size:10px;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+    .idc-info{font-size:10px;color:rgba(255,255,255,0.6);line-height:1.8}
+    .idc-no{position:absolute;bottom:12px;right:14px;font-family:'Rajdhani',sans-serif;
+      font-size:10px;color:rgba(255,107,53,0.6);letter-spacing:1px}
+    .idc-stripe{position:absolute;bottom:0;left:0;right:0;height:4px;
+      background:linear-gradient(90deg,var(--primary),var(--secondary))}
+
+    /* FORM */
+    .fg{display:flex;flex-direction:column;gap:6px}
+    .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+    .fgrid .full{grid-column:1/-1}
+    label{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+    textarea{padding:11px 14px;background:var(--input);border:1px solid var(--brds);
+      border-radius:8px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;
+      outline:none;resize:vertical;min-height:80px}
+    .pup{border:2px dashed var(--brd);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s}
+    .pup:hover{border-color:var(--primary);background:rgba(255,107,53,0.05)}
+    .pp{width:100px;height:120px;object-fit:cover;border-radius:8px;border:2px solid var(--brd);display:none;margin:0 auto}
+
+    /* TIMELINE */
+    .tl{padding:4px 0}
+    .tli{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--brds)}
+    .tli:last-child{border-bottom:none}
+    .tlic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .tlic.created{background:rgba(76,175,80,0.15);color:var(--ok)}
+    .tlic.updated{background:rgba(33,150,243,0.15);color:var(--info)}
+    .tlic.printed{background:rgba(255,107,53,0.15);color:var(--primary)}
+    .tlic.deleted{background:rgba(244,67,54,0.15);color:var(--err)}
+    .tl-title{font-size:13px;font-weight:600;color:#fff}
+    .tl-meta{font-size:11px;color:var(--muted);margin-top:3px}
+
+    /* MODAL */
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+      z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+    .mo.open{display:flex}
+    .modal{background:var(--card);border:1px solid var(--brds);border-radius:16px;
+      width:100%;max-width:700px;max-height:90vh;overflow-y:auto}
+    .mhd{padding:20px 24px;border-bottom:1px solid var(--brds);display:flex;
+      align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card)}
+    .mhd h3{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff}
+    .mclose{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+    .mclose:hover{color:#fff}
+    .mbody{padding:24px}
+    .mfoot{padding:16px 24px;border-top:1px solid var(--brds);display:flex;gap:10px;justify-content:flex-end}
+
+    /* PAGINATION */
+    .pag{display:flex;align-items:center;gap:8px;justify-content:flex-end;padding-top:16px}
+    .pgb{padding:6px 12px;border-radius:6px;border:1px solid var(--brds);background:var(--input);
+      color:var(--muted);cursor:pointer;font-size:13px;transition:all .2s}
+    .pgb:hover,.pgb.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .pgb:disabled{opacity:.4;cursor:not-allowed}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:48px 20px}
+    .empty i{font-size:48px;color:var(--muted);margin-bottom:16px;display:block}
+    .empty p{color:var(--muted);font-size:14px}
+
+    /* TOAST */
+    #tc{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+    .toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;
+      backdrop-filter:blur(10px);min-width:260px;animation:tin .3s ease;
+      display:flex;align-items:center;gap:10px}
+    @keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+    .tok{background:rgba(76,175,80,0.9);color:#fff}
+    .terr{background:rgba(244,67,54,0.9);color:#fff}
+    .tinf{background:rgba(33,150,243,0.9);color:#fff}
+
+    @media(max-width:768px){
+      .sb{transform:translateX(-100%)}.sb.open{transform:none}
+      .main{margin-left:0}.sg{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sb" id="sb">
+    <div class="sb-logo">
+      <div class="sb-icon">🎓</div>
+      <div>
+        <div class="sb-title">NIT Bhubaneswar</div>
+        <div class="sb-sub">ADMIN PANEL</div>
+      </div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Main</div>
+      <button class="ni on" data-pg="dash" onclick="showPg('dash')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+      <button class="ni" data-pg="create" onclick="showPg('create')"><i class="fas fa-id-card"></i> Create ID Card</button>
+      <div class="nav-lbl" style="margin-top:8px">Manage</div>
+      <button class="ni" data-pg="cards" onclick="showPg('cards')"><i class="fas fa-th-list"></i> All Cards</button>
+      <button class="ni" data-pg="users" onclick="showPg('users')"><i class="fas fa-users"></i> Registered Users</button>
+    </div>
+    <div class="sb-foot">
+      <div class="uchip">
+        <div class="uav" id="uav">A</div>
+        <div>
+          <div class="uname" id="uname">Admin</div>
+          <div class="urole" id="urole">superadmin</div>
+        </div>
+        <button class="lout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button onclick="document.getElementById('sb').classList.toggle('open')"
+          style="display:none;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer" id="mBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="bc" id="bc">Dashboard</div>
+      </div>
+      <div class="top-acts">
+        <div class="top-badge">● MongoDB Connected</div>
+        <button class="btn bp sm" onclick="showPg('create')"><i class="fas fa-plus"></i> New Card</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ─── DASHBOARD ─── -->
+      <div class="pg on" id="pg-dash">
+        <div class="sg" id="statGrid"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="box">
+            <div class="bh"><h3><i class="fas fa-clock" style="color:var(--primary);margin-right:8px"></i>Recent Cards</h3></div>
+            <div class="bb"><div class="tl" id="recentAct">
+              <div class="empty"><i class="fas fa-history"></i><p>No cards yet</p></div>
+            </div></div>
+          </div>
+          <div class="box">
+            <div class="bh"><h3><i class="fas fa-chart-bar" style="color:var(--primary);margin-right:8px"></i>Card Distribution</h3></div>
+            <div class="bb" id="chartArea"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── CREATE CARD ─── -->
+      <div class="pg" id="pg-create">
+        <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+          <div class="box">
+            <div class="bh"><h3><i class="fas fa-id-card" style="color:var(--primary);margin-right:8px"></i>New ID Card</h3></div>
+            <div class="bb">
+              <div class="fg" style="margin-bottom:20px">
+                <label>Card Type</label>
+                <select id="cType" onchange="updFields()">
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="staff">Staff</option>
+                  <option value="visitor">Visitor</option>
+                </select>
+              </div>
+              <div class="fgrid" id="dynFields"></div>
+              <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+                <button class="btn" style="background:var(--input);color:var(--muted)" onclick="clearForm()">
+                  <i class="fas fa-times"></i> Clear
+                </button>
+                <button class="btn bp" onclick="createCard()">
+                  <i class="fas fa-save"></i> Save & Create
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIVE PREVIEW -->
+          <div>
+            <div class="box" style="position:sticky;top:80px">
+              <div class="bh"><h3>Live Preview</h3></div>
+              <div class="cp">
+                <div class="idc" id="liveCard">
+                  <div class="idc-hdr">
+                    <div class="idc-logo">🎓</div>
+                    <div class="idc-inst">
+                      <div class="in">NIT BHUBANESWAR</div>
+                      <div class="is">NALANDA INSTITUTE OF TECHNOLOGY</div>
+                    </div>
+                  </div>
+                  <div class="idc-body">
+                    <div class="idc-ph" id="pvPh"><i class="fas fa-user"></i></div>
+                    <div class="idc-det">
+                      <div class="idc-name" id="pvName">Your Name</div>
+                      <div class="idc-role" id="pvRole">Student</div>
+                      <div class="idc-info" id="pvInfo">Roll No: —<br>Branch: —<br>Year: —</div>
+                    </div>
+                  </div>
+                  <div class="idc-no" id="pvNo">NIT-XXXXXXXX</div>
+                  <div class="idc-stripe"></div>
+                </div>
+              </div>
+              <div class="mfoot" style="padding:12px 16px">
+                <button class="btn bi sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── ALL CARDS ─── -->
+      <div class="pg" id="pg-cards">
+        <div class="box">
+          <div class="bh">
+            <h3><i class="fas fa-th-list" style="color:var(--primary);margin-right:8px"></i>All ID Cards</h3>
+            <button class="btn bp sm" onclick="showPg('create')"><i class="fas fa-plus"></i> New</button>
+          </div>
+          <div class="bb">
+            <div class="sbar" style="margin-bottom:16px">
+              <div class="siw"><i class="fas fa-search"></i>
+                <input type="text" id="csrch" placeholder="Search name, card number..." oninput="dbSrch()"/>
+              </div>
+              <select id="fType" onchange="loadCards()">
+                <option value="">All Types</option>
+                <option value="student">Student</option>
+                <option value="faculty">Faculty</option>
+                <option value="staff">Staff</option>
+                <option value="visitor">Visitor</option>
+              </select>
+            </div>
+            <div class="tw">
+              <table>
+                <thead><tr>
+                  <th>Card No.</th><th>Name</th><th>Type</th>
+                  <th>Dept/Branch</th><th>Created</th><th>Actions</th>
+                </tr></thead>
+                <tbody id="cTbl">
+                  <tr><td colspan="6"><div class="empty"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pag" id="cPag"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── USERS ─── -->
+      <div class="pg" id="pg-users">
+        <div class="box">
+          <div class="bh"><h3><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>Registered Users</h3></div>
+          <div class="bb">
+            <div class="tw">
+              <table>
+                <thead><tr>
+                  <th>#</th><th>Name</th><th>Email</th><th>Role</th>
+                  <th>Dept/Branch</th><th>Registered</th><th>Last Login</th>
+                </tr></thead>
+                <tbody id="uTbl">
+                  <tr><td colspan="7"><div class="empty"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- CARD DETAIL MODAL -->
+<div class="mo" id="cdModal">
+  <div class="modal">
+    <div class="mhd">
+      <h3 id="mdTitle">Card Details</h3>
+      <button class="mclose" onclick="closeMo('cdModal')">✕</button>
+    </div>
+    <div class="mbody" id="mdBody"></div>
+    <div class="mfoot" id="mdFoot"></div>
+  </div>
+</div>
+
+<div id="tc"></div>
+
+<script>
+const API = '/api';
+const tok = sessionStorage.getItem('nit_token');
+
+// ── SESSION GUARD ──
+(function(){
+  const u = JSON.parse(sessionStorage.getItem('nit_user')||'{}');
+  if(!tok || (u.role!=='admin' && u.role!=='superadmin')){
+    window.location.href='login.html'; return;
+  }
+  document.getElementById('uname').textContent = u.name||'Admin';
+  document.getElementById('urole').textContent = u.role;
+  document.getElementById('uav').textContent = (u.name||'A')[0].toUpperCase();
+})();
+
+function doLogout(){
+  fetch(API+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+tok}});
+  sessionStorage.clear();
+  window.location.href='login.html';
+}
+
+function authH(){ return {'Content-Type':'application/json','Authorization':'Bearer '+tok}; }
+
+let cPage=1, srchTO=null;
+
+// ── NAV ──
+function showPg(name){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  document.querySelector('[data-pg="'+name+'"]')?.classList.add('on');
+  const labels={dash:'Dashboard',create:'Create ID Card',cards:'All Cards',users:'Registered Users'};
+  document.getElementById('bc').textContent=labels[name]||name;
+  if(name==='cards')  loadCards();
+  if(name==='users')  loadUsers();
+  if(name==='dash')   loadDash();
+}
+
+// ── DASHBOARD ──
+async function loadDash(){
+  try{
+    const r = await fetch(API+'/dashboard',{headers:authH()});
+    const d = await r.json();
+    document.getElementById('statGrid').innerHTML = `
+      <div class="sc"><div class="sic or"><i class="fas fa-id-card"></i></div>
+        <div><div class="sv">${d.totalCards||0}</div><div class="sl">Total Cards</div></div></div>
+      <div class="sc"><div class="sic bl"><i class="fas fa-user-graduate"></i></div>
+        <div><div class="sv">${d.studentCards||0}</div><div class="sl">Students</div></div></div>
+      <div class="sc"><div class="sic yl"><i class="fas fa-chalkboard-teacher"></i></div>
+        <div><div class="sv">${d.facultyCards||0}</div><div class="sl">Faculty</div></div></div>
+      <div class="sc"><div class="sic gr"><i class="fas fa-users"></i></div>
+        <div><div class="sv">${d.totalUsers||0}</div><div class="sl">Users</div></div></div>
+      <div class="sc"><div class="sic pu"><i class="fas fa-user-tie"></i></div>
+        <div><div class="sv">${d.staffCards||0}</div><div class="sl">Staff</div></div></div>
+      <div class="sc"><div class="sic or"><i class="fas fa-calendar-day"></i></div>
+        <div><div class="sv">${d.todayCards||0}</div><div class="sl">Today</div></div></div>`;
+
+    const acts = d.recentActivity||[];
+    document.getElementById('recentAct').innerHTML = acts.length
+      ? acts.map(h=>`<div class="tli">
+          <div class="tlic created"><i class="fas fa-id-card"></i></div>
+          <div><div class="tl-title">${h.actionDetails||h.action}</div>
+            <div class="tl-meta"><code style="color:var(--muted);font-size:10px">${h.cardNumber||''}</code> · ${timeAgo(h.createdAt)}</div>
+          </div></div>`).join('')
+      : '<div class="empty"><i class="fas fa-history"></i><p>No activity yet</p></div>';
+
+    const total=(d.studentCards||0)+(d.facultyCards||0)+(d.staffCards||0)||1;
+    document.getElementById('chartArea').innerHTML=[
+      {label:'Students',val:d.studentCards||0,col:'var(--info)'},
+      {label:'Faculty', val:d.facultyCards||0, col:'var(--primary)'},
+      {label:'Staff',   val:d.staffCards||0,   col:'var(--ok)'}
+    ].map(b=>`<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px">
+        <span>${b.label}</span><span>${b.val}</span></div>
+      <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${Math.round(b.val/total*100)}%;background:${b.col};border-radius:4px;transition:width 1s ease"></div>
+      </div></div>`).join('');
+  }catch(e){console.error(e);}
+}
+
+// ── CREATE CARD FORM ──
+function updFields(){
+  const t=document.getElementById('cType').value;
+  const common=`
+    <div class="fg"><label>Full Name *</label>
+      <input type="text" id="f_name" placeholder="Enter full name" oninput="updPrev()"/></div>
+    <div class="fg"><label>Email *</label>
+      <input type="email" id="f_email" placeholder="email@nitbbsr.ac.in"/></div>
+    <div class="fg"><label>Phone</label>
+      <input type="tel" id="f_phone" placeholder="10-digit mobile"/></div>
+    <div class="fg"><label>Blood Group</label>
+      <select id="f_blood"><option value="">Select</option>
+        ${['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(b=>`<option>${b}</option>`).join('')}
+      </select></div>
+    <div class="fg"><label>Date of Birth</label><input type="date" id="f_dob"/></div>
+    <div class="fg"><label>Valid Upto</label><input type="date" id="f_valid"/></div>
+    <div class="fg full"><label>Address</label>
+      <textarea id="f_address" placeholder="Address"></textarea></div>`;
+  const student=`
+    <div class="fg"><label>Roll Number *</label>
+      <input type="text" id="f_roll" placeholder="e.g. 22BCE001" oninput="updPrev()"/></div>
+    <div class="fg"><label>Branch *</label>
+      <select id="f_branch" onchange="updPrev()"><option value="">Select Branch</option>
+        ${['CSE','ECE','EEE','ME','CE','CH','MME','BT','IT','MCA','MBA'].map(b=>`<option>${b}</option>`).join('')}
+      </select></div>
+    <div class="fg"><label>Year</label>
+      <select id="f_year" onchange="updPrev()"><option value="">Year</option>
+        <option>1st Year</option><option>2nd Year</option><option>3rd Year</option>
+        <option>4th Year</option><option>5th Year</option></select></div>`;
+  const faculty=`
+    <div class="fg"><label>Employee ID *</label>
+      <input type="text" id="f_empId" placeholder="FAC001" oninput="updPrev()"/></div>
+    <div class="fg"><label>Designation *</label>
+      <input type="text" id="f_desig" placeholder="Associate Professor" oninput="updPrev()"/></div>
+    <div class="fg"><label>Department *</label>
+      <select id="f_dept" onchange="updPrev()"><option value="">Select</option>
+        ${['CSE','ECE','EEE','ME','CE','Mathematics','Physics','HSS'].map(d=>`<option>${d}</option>`).join('')}
+      </select></div>`;
+  const staff=`
+    <div class="fg"><label>Employee ID *</label>
+      <input type="text" id="f_empId" placeholder="STF001" oninput="updPrev()"/></div>
+    <div class="fg"><label>Designation</label>
+      <input type="text" id="f_desig" placeholder="Technical Assistant" oninput="updPrev()"/></div>
+    <div class="fg"><label>Department</label>
+      <select id="f_dept" onchange="updPrev()"><option value="">Select</option>
+        ${['Administration','Library','IT Cell','Hostel','Finance','Medical','Security'].map(d=>`<option>${d}</option>`).join('')}
+      </select></div>`;
+  const visitor=`
+    <div class="fg"><label>Purpose *</label>
+      <input type="text" id="f_desig" placeholder="Guest Lecture" oninput="updPrev()"/></div>
+    <div class="fg"><label>Organisation</label>
+      <input type="text" id="f_dept" placeholder="Company / Institution" oninput="updPrev()"/></div>`;
+  const photo=`
+    <div class="fg full"><label>Photo</label>
+      <div class="pup" onclick="document.getElementById('phIn').click()">
+        <img class="pp" id="phPrev"/>
+        <div id="phPlch"><i class="fas fa-camera" style="font-size:28px;color:var(--muted);margin-bottom:8px;display:block"></i>
+          <p style="color:var(--muted);font-size:13px">Click to upload photo</p></div>
+        <input type="file" id="phIn" accept="image/*" style="display:none" onchange="handlePhoto(this)"/></div></div>`;
+  const extra=t==='student'?student:t==='faculty'?faculty:t==='staff'?staff:visitor;
+  document.getElementById('dynFields').innerHTML=common+extra+photo;
+  updPrev();
+}
+
+function handlePhoto(inp){
+  const f=inp.files[0]; if(!f) return;
+  if(f.size>2*1024*1024){showToast('Photo max 2MB','err');return;}
+  const rd=new FileReader();
+  rd.onload=e=>{
+    document.getElementById('phPrev').src=e.target.result;
+    document.getElementById('phPrev').style.display='block';
+    document.getElementById('phPlch').style.display='none';
+    document.getElementById('pvPh').innerHTML=`<img src="${e.target.result}"/>`;
+  };
+  rd.readAsDataURL(f);
+}
+
+function updPrev(){
+  const t=document.getElementById('cType')?.value||'student';
+  document.getElementById('pvName').textContent=document.getElementById('f_name')?.value||'Your Name';
+  document.getElementById('pvRole').textContent=t.toUpperCase();
+  let info='';
+  if(t==='student') info=`Roll No: ${document.getElementById('f_roll')?.value||'—'}<br>Branch: ${document.getElementById('f_branch')?.value||'—'}<br>Year: ${document.getElementById('f_year')?.value||'—'}`;
+  else if(t==='faculty'||t==='staff') info=`ID: ${document.getElementById('f_empId')?.value||'—'}<br>${document.getElementById('f_desig')?.value||'—'}<br>Dept: ${document.getElementById('f_dept')?.value||'—'}`;
+  else info=`Purpose: ${document.getElementById('f_desig')?.value||'—'}`;
+  document.getElementById('pvInfo').innerHTML=info;
+}
+
+function getForm(){
+  const t=document.getElementById('cType').value;
+  const g=id=>document.getElementById(id)?.value||'';
+  const d={cardType:t,name:g('f_name'),email:g('f_email'),phone:g('f_phone'),
+    bloodGroup:g('f_blood'),dateOfBirth:g('f_dob'),validUpto:g('f_valid'),address:g('f_address')};
+  const pp=document.getElementById('phPrev');
+  if(pp&&pp.src&&pp.style.display!=='none') d.photo=pp.src;
+  if(t==='student'){d.rollNumber=g('f_roll');d.branch=g('f_branch');d.year=g('f_year');}
+  else if(t==='faculty'||t==='staff'){d.employeeId=g('f_empId');d.designation=g('f_desig');d.department=g('f_dept');}
+  else{d.designation=g('f_desig');d.department=g('f_dept');}
+  return d;
+}
+
+async function createCard(){
+  const data=getForm();
+  if(!data.name){showToast('Name required','err');return;}
+  if(!data.email){showToast('Email required','err');return;}
+  try{
+    const r=await fetch(API+'/cards',{method:'POST',headers:authH(),body:JSON.stringify(data)});
+    const res=await r.json();
+    if(res.success){
+      document.getElementById('pvNo').textContent=res.cardNumber;
+      showToast('Card created! '+res.cardNumber,'ok');
+      loadDash();
+      showSuccessModal(res.card);
+    } else {
+      showToast(res.error||'Error creating card','err');
+    }
+  }catch(e){showToast('Server error: '+e.message,'err');}
+}
+
+function showSuccessModal(card){
+  document.getElementById('mdTitle').textContent='Card Created!';
+  document.getElementById('mdBody').innerHTML=`
+    <div style="text-align:center;padding:10px 0 20px">
+      <div style="font-size:48px;margin-bottom:12px">🎉</div>
+      <h3 style="color:var(--ok);font-family:'Rajdhani',sans-serif;font-size:22px;margin-bottom:6px">ID Card Created!</h3>
+      <p style="color:var(--muted);margin-bottom:20px">Card saved to MongoDB</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
+        <div><span style="color:var(--muted)">Card Number:</span><br><strong>${card.cardNumber}</strong></div>
+        <div><span style="color:var(--muted)">Type:</span><br><strong>${card.cardType}</strong></div>
+        <div><span style="color:var(--muted)">Name:</span><br><strong>${card.name}</strong></div>
+        <div><span style="color:var(--muted)">Email:</span><br><strong>${card.email}</strong></div>
+      </div></div>`;
+  document.getElementById('mdFoot').innerHTML=`
+    <button class="btn bp" onclick="closeMo('cdModal');clearForm()"><i class="fas fa-plus"></i> New Card</button>`;
+  document.getElementById('cdModal').classList.add('open');
+}
+
+function clearForm(){
+  document.getElementById('cType').value='student';
+  updFields();
+  document.getElementById('pvName').textContent='Your Name';
+  document.getElementById('pvInfo').innerHTML='Roll No: —<br>Branch: —<br>Year: —';
+  document.getElementById('pvNo').textContent='NIT-XXXXXXXX';
+  document.getElementById('pvPh').innerHTML='<i class="fas fa-user"></i>';
+}
+
+// ── ALL CARDS ──
+async function loadCards(){
+  const srch=document.getElementById('csrch').value;
+  const ftype=document.getElementById('fType').value;
+  const params=new URLSearchParams({page:cPage,limit:15});
+  if(srch)  params.append('search',srch);
+  if(ftype) params.append('type',ftype);
+  try{
+    const r=await fetch(API+'/cards?'+params,{headers:authH()});
+    const d=await r.json();
+    const tbody=document.getElementById('cTbl');
+    if(!d.cards||!d.cards.length){
+      tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><i class="fas fa-id-card"></i><p>No cards found</p></div></td></tr>`;
+      document.getElementById('cPag').innerHTML=''; return;
+    }
+    tbody.innerHTML=d.cards.map(c=>`
+      <tr>
+        <td><code style="color:var(--primary);font-size:12px">${c.cardNumber||'—'}</code></td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          ${c.photo?`<img src="${c.photo}" style="width:28px;height:34px;border-radius:4px;object-fit:cover">`:`<div style="width:28px;height:34px;border-radius:4px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center">👤</div>`}
+          <div><div style="font-weight:600">${c.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${c.email||''}</div></div></div></td>
+        <td><span class="badge ${c.cardType==='student'?'b-info':c.cardType==='faculty'?'b-or':'b-ok'}">${c.cardType}</span></td>
+        <td style="color:var(--muted);font-size:12px">${c.branch||c.department||'—'}</td>
+        <td style="color:var(--muted);font-size:12px">${c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):'—'}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn bi sm" onclick="viewCard('${c._id}')"><i class="fas fa-eye"></i></button>
+          <button class="btn bd sm" onclick="deleteCard('${c._id}','${c.name}')"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`).join('');
+    document.getElementById('cPag').innerHTML=`
+      <button class="pgb" onclick="cPage--;loadCards()" ${cPage<=1?'disabled':''}>‹ Prev</button>
+      <span style="font-size:13px;color:var(--muted)">Page ${d.page} of ${d.pages} (${d.total} cards)</span>
+      <button class="pgb" onclick="cPage++;loadCards()" ${cPage>=d.pages?'disabled':''}>Next ›</button>`;
+  }catch(e){showToast('Failed to load cards','err');}
+}
+
+async function viewCard(id){
+  try{
+    const r=await fetch(API+'/cards/'+id,{headers:authH()});
+    const c=await r.json();
+    let info='';
+    if(c.cardType==='student') info=`Roll: ${c.rollNumber||'—'} | Branch: ${c.branch||'—'} | Year: ${c.year||'—'}`;
+    else info=`ID: ${c.employeeId||'—'} | ${c.designation||'—'} | Dept: ${c.department||'—'}`;
+    document.getElementById('mdTitle').textContent='Card — '+c.cardNumber;
+    document.getElementById('mdBody').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div><span style="color:var(--muted)">Name:</span><br><strong>${c.name}</strong></div>
+        <div><span style="color:var(--muted)">Email:</span><br><strong>${c.email||'—'}</strong></div>
+        <div><span style="color:var(--muted)">Phone:</span><br><strong>${c.phone||'—'}</strong></div>
+        <div><span style="color:var(--muted)">Blood Group:</span><br><strong>${c.bloodGroup||'—'}</strong></div>
+        <div><span style="color:var(--muted)">Card No:</span><br><code style="color:var(--primary)">${c.cardNumber}</code></div>
+        <div><span style="color:var(--muted)">Created:</span><br><strong>${c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):'—'}</strong></div>
+      </div>
+      <div style="margin-top:14px;background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;font-size:13px">
+        ${info}</div>`;
+    document.getElementById('mdFoot').innerHTML=`
+      <button class="btn bd sm" onclick="deleteCard('${c._id}','${c.name}');closeMo('cdModal')"><i class="fas fa-trash"></i> Delete</button>
+      <button class="btn bi sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>`;
+    document.getElementById('cdModal').classList.add('open');
+  }catch(e){showToast('Failed to load card','err');}
+}
+
+async function deleteCard(id,name){
+  if(!confirm('Delete card for "'+name+'"? This cannot be undone.')) return;
+  try{
+    const r=await fetch(API+'/cards/'+id,{method:'DELETE',headers:authH()});
+    const d=await r.json();
+    if(d.success){ showToast('Card deleted','ok'); loadCards(); loadDash(); }
+  }catch(e){showToast('Delete failed','err');}
+}
+
+function dbSrch(){ clearTimeout(srchTO); cPage=1; srchTO=setTimeout(loadCards,400); }
+
+// ── USERS ──
+async function loadUsers(){
+  try{
+    const r=await fetch(API+'/users',{headers:authH()});
+    const d=await r.json();
+    const users=d.users||[];
+    const tbody=document.getElementById('uTbl');
+    if(!users.length){
+      tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><i class="fas fa-users"></i><p>No users registered yet</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML=users.map((u,i)=>`
+      <tr>
+        <td style="color:var(--muted)">${i+1}</td>
+        <td><strong>${u.name||((u.fname||'')+' '+(u.lname||''))}</strong></td>
+        <td style="color:var(--muted);font-size:12px">${u.email}</td>
+        <td><span class="badge ${u.role==='student'?'b-info':u.role==='faculty'?'b-or':'b-ok'}">${u.role}</span></td>
+        <td style="color:var(--muted)">${u.dept||u.branch||'—'}</td>
+        <td style="color:var(--muted);font-size:12px">${u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN'):'—'}</td>
+        <td style="color:var(--muted);font-size:12px">${u.lastLogin?new Date(u.lastLogin).toLocaleDateString('en-IN'):'Never'}</td>
+      </tr>`).join('');
+  }catch(e){showToast('Failed to load users','err');}
+}
+
+// ── UTILS ──
+function closeMo(id){ document.getElementById(id).classList.remove('open'); }
+function showToast(msg,type='ok'){
+  const d=document.createElement('div');
+  d.className='toast t'+type;
+  const ic={ok:'fa-check-circle',err:'fa-times-circle',inf:'fa-info-circle'};
+  d.innerHTML=`<i class="fas ${ic[type]||'fa-info-circle'}"></i> ${msg}`;
+  document.getElementById('tc').appendChild(d);
+  setTimeout(()=>d.remove(),3500);
+}
+function timeAgo(date){
+  if(!date) return '—';
+  const diff=(Date.now()-new Date(date))/1000;
+  if(diff<60) return 'just now';
+  if(diff<3600) return Math.floor(diff/60)+'m ago';
+  if(diff<86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));
+});
+window.onload=function(){ updFields(); loadDash(); };
+</script>
+</body>
+</html>

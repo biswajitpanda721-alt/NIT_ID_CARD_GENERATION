@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="https://img.jagranjosh.com/images/2022/June/362022/logo%20%2823%29.png" alt="NIT BBSR Logo">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Nalanda Institute of Technology</h1>
+                        <h2>Bhubaneswar</h2>
+                        <!-- <p>(An Institute of National Importance)</p> -->
+                    </div>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="Home.html" class="nav-link ">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="IDcard.html" class="nav-link">ID Card</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#quiz" class="nav-link active">Quiz</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="About.html" class="nav-link">About Us</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quiz Section -->
+        <section class="quiz-section" id="quiz">
+            <div class="section-header">
+                <h2>Quiz System</h2>
+                <p>Test your knowledge with various quiz categories</p>
+            </div>
+
+            <div class="quiz-categories">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Technical Quiz</h3>
+                    <p>Computer Science, Programming, Algorithms</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-question-circle"></i> 5 Questions</span>
+                        <span><i class="fas fa-clock"></i> 10 Minutes</span>
+                    </div>
+                    <button class="btn-primary" onclick="startQuiz('technical')">Start Quiz</button>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Aptitude Test</h3>
+                    <p>Logical Reasoning, Quantitative Aptitude</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-question-circle"></i> 5 Questions</span>
+                        <span><i class="fas fa-clock"></i> 10 Minutes</span>
+                    </div>
+                    <button class="btn-primary" onclick="startQuiz('aptitude')">Start Quiz</button>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Programming Quiz</h3>
+                    <p>C++, Java, Python, Web Development</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-question-circle"></i> 5 Questions</span>
+                        <span><i class="fas fa-clock"></i> 10 Minutes</span>
+                    </div>
+                    <button class="btn-primary" onclick="startQuiz('programming')">Start Quiz</button>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>General Knowledge</h3>
+                    <p>Current Affairs, History, Geography</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-question-circle"></i> 5 Questions</span>
+                        <span><i class="fas fa-clock"></i> 10 Minutes</span>
+                    </div>
+                    <button class="btn-primary" onclick="startQuiz('general')">Start Quiz</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Quiz Modal -->
+    <div class="quiz-modal" id="quizModal">
+        <div class="quiz-modal-content">
+            <div class="quiz-header">
+                <h3 id="quizTitle">Quiz Title</h3>
+                <div class="quiz-info">
+                    <span id="quizTimer"><i class="fas fa-clock"></i> 00:00</span>
+                    <span id="quizProgress">Question 1 of 5</span>
+                </div>
+                <button class="close-modal" id="closeQuizModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="quiz-body">
+                <div class="question-container" id="questionContainer">
+                    <!-- Questions will be loaded here -->
+                </div>
+                
+                <div class="quiz-navigation">
+                    <button class="btn-secondary" id="prevQuestion" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button class="btn-primary" id="nextQuestion">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="btn-success" id="submitQuiz" style="display: none;">
+                        <i class="fas fa-check"></i> Submit Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-modal-content">
+            <div class="result-header">
+                <h3>Quiz Results</h3>
+                <button class="close-modal" id="closeResultModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="result-body">
+                <div class="score-circle">
+                    <div class="score-percentage" id="scorePercentage">0%</div>
+                </div>
+                <div class="result-details">
+                    <p><strong>Total Questions:</strong> <span id="totalQuestions">0</span></p>
+                    <p><strong>Correct Answers:</strong> <span id="correctAnswers">0</span></p>
+                    <p><strong>Wrong Answers:</strong> <span id="wrongAnswers">0</span></p>
+                    <p><strong>Time Taken:</strong> <span id="timeTaken">00:00</span></p>
+                </div>
+                
+                <div class="result-actions">
+                    <button class="btn-primary" id="retakeQuiz">
+                        <i class="fas fa-redo"></i> Retake Quiz
+                    </button>
+                    <button class="btn-secondary" id="shareResult">
+                        <i class="fas fa-share"></i> Share Result
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+            <div class="footer-logo">
+                <img src="https://img.jagranjosh.com/images/2022/June/362022/logo%20%2823%29.png" alt="NIT BBSR Logo">
+                <p>NIT Bhubaneswar</p>
+            </div>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/nalandabhubaneswar/"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://x.com/NALANDABHUBANE1#:~:text=NIT%20%2D%20NALANDA%20INSTITUTE%20OF%20TECHNOLOGY,(%40NALANDABHUBANE1)%20%2F%20Posts%20%2F%20X"><i class="fa-brands fa-twitter"></i></a>
+                <a href="https://in.linkedin.com/company/nalanda-institute-of-technology-bhubaneswar"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/nalandabbsr/"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <div class="footer-copyright">
+                <p><span>&copy;</span> 2024 Nalanda Institute of Technology Bhubaneswar. All rights reserved.</p>
+                <p>Designed and Developed by <span>NIT Bhubaneswar Web Team</span></p>
+            </div>
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+<script>
+(function(){if(!sessionStorage.getItem("nit_token")){window.location.href="login.html"}})()
+function doLogout(e){e.preventDefault();sessionStorage.clear();window.location.href="login.html"}
+</script>
+</body>
+</html>

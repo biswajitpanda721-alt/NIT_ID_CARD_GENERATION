@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nalanda Institute of Technology Bhubaneswar - Complete System</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        #saveToast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;
+            font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px;
+            z-index:9999;transform:translateX(120%);transition:transform 0.3s ease;min-width:260px;}
+        #saveToast.show{transform:none;}
+        #saveToast.ok{background:#4CAF50;}
+        #saveToast.err{background:#f44336;}
+        #saveToast.inf{background:#2196F3;}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="https://img.jagranjosh.com/images/2022/June/362022/logo%20%2823%29.png" alt="NIT BBSR Logo">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Nalanda Institute of Technology</h1>
+                        <h2>Bhubaneswar</h2>
+                    </div>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="Home.html" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="IDcard.html" class="nav-link active">ID Card</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="Quiz.html" class="nav-link">Quiz</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="About.html" class="nav-link">About Us</a>
+                        </li>
+                        <li class="nav-item" id="navUserItem" style="display:none;">
+                            <span id="navUserName" style="color:#FF6B35;font-weight:600;font-size:14px;
+                              padding:5px 14px;background:rgba(255,107,53,0.1);
+                              border-radius:20px;border:1px solid rgba(255,107,53,0.3);white-space:nowrap;">
+                              👤</span>
+                        </li>
+                        <li class="nav-item">
+                            <a href="login.html" onclick="doLogout(event)"
+                               style="background:linear-gradient(135deg,#FF6B35,#F7931E);
+                                      color:#fff;padding:7px 18px;border-radius:20px;
+                                      font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;">
+                               Logout</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="id-card-container">
+        <div class="form-card">
+            <h3>ID Card Information</h3>
+            <form id="idCardForm" onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cardType">Card Type</label>
+                        <select id="cardType" required>
+                            <option value="">Select Card Type</option>
+                            <option value="student">Student ID Card</option>
+                            <option value="faculty">Faculty ID Card</option>
+                            <option value="staff">Staff ID Card</option>
+                            <option value="research">Research Scholar ID Card</option>
+                            <option value="phd">PhD Scholar ID Card</option>
+                            <option value="visitor">Visitor ID Card</option>
+                            <option value="alumni">Alumni ID Card</option>
+                            <option value="guest">Guest Faculty ID Card</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="template">Template</label>
+                        <select id="template" required>
+                            <option value="">Select Template</option>
+                            <option value="modern">Modern Design</option>
+                            <option value="classic">Classic Design</option>
+                            <option value="minimal">Minimal Design</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" placeholder="Enter first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" placeholder="Enter last name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rollNumber">Roll Number *</label>
+                        <input type="text" id="rollNumber" placeholder="Enter roll number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department *</label>
+                        <select id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="CSE">Computer Science</option>
+                            <option value="ECE">Electronics</option>
+                            <option value="ME">Mechanical</option>
+                            <option value="CE">Civil</option>
+                            <option value="EE">Electrical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <input type="text" id="semester" placeholder="Enter semester">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch">Batch</label>
+                        <input type="text" id="batch" placeholder="Enter batch">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bloodGroup">Blood Group</label>
+                        <select id="bloodGroup">
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" placeholder="Enter phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="photo">Photo Upload</label>
+                    <div class="photo-upload">
+                        <input type="file" id="photo" accept="image/*">
+                        <div class="photo-preview" id="photoPreview">
+                            <i class="fas fa-camera"></i>
+                            <span class="photoInput">Upload Photo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="resetForm">Reset</button>
+                    <button type="submit" class="btn-primary">Generate ID Card</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="preview-card">
+            <h3>ID Card Preview</h3>
+            <div class="id-card-display" id="idCardDisplay">
+                <p>Fill the form to generate ID card</p>
+            </div>
+            <div class="preview-actions">
+                <button class="btn-primary" id="downloadJPG" disabled>
+                    <i class="fas fa-download"></i> Download JPG
+                </button>
+                <button class="btn-secondary" id="printCard" disabled>
+                    <i class="fa fa-print"></i> Print Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+                <div class="footer-logo">
+                    <img src="https://img.jagranjosh.com/images/2022/June/362022/logo%20%2823%29.png" alt="NIT BBSR Logo">
+                    <p>NIT Bhubaneswar</p>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/nalandabhubaneswar/"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://x.com/NALANDABHUBANE1"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://in.linkedin.com/company/nalanda-institute-of-technology-bhubaneswar"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/nalandabbsr/"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+                <div class="footer-copyright">
+                    <p><span>&copy;</span> 2024 Nalanda Institute of Technology Bhubaneswar. All rights reserved.</p>
+                    <p>Designed and Developed by <span>NIT Bhubaneswar Web Team</span></p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <div id="saveToast">
+        <i id="saveToastIcon" class="fas fa-check-circle"></i>
+        <span id="saveToastMsg"></span>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+    // ── SESSION GUARD ──
+    (function(){
+        var tok = sessionStorage.getItem('nit_token');
+        var u   = JSON.parse(sessionStorage.getItem('nit_user') || '{}');
+        if (!tok) { window.location.href = 'login.html'; return; }
+        var ni = document.getElementById('navUserItem');
+        var nu = document.getElementById('navUserName');
+        if (ni && nu && u.name) {
+            ni.style.display = 'list-item';
+            nu.textContent = '👤 ' + u.name.split(' ')[0];
+        }
+    })();
+
+    function doLogout(e) {
+        e.preventDefault();
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // ── TOAST ──
+    function showSaveToast(msg, type) {
+        var t  = document.getElementById('saveToast');
+        var ic = document.getElementById('saveToastIcon');
+        var ms = document.getElementById('saveToastMsg');
+        var icons = { ok:'fa-check-circle', err:'fa-times-circle', inf:'fa-info-circle' };
+        ic.className = 'fas ' + (icons[type] || 'fa-info-circle');
+        ms.textContent = msg;
+        t.className = 'show ' + type;
+        setTimeout(function(){ t.classList.remove('show'); }, 4000);
+    }
+
+    // ── SAVE TO BACKEND (server.js → MongoDB) ──
+    async function saveCardToBackend(cardData) {
+        try {
+            var tok  = sessionStorage.getItem('nit_token');
+            var user = JSON.parse(sessionStorage.getItem('nit_user') || '{}');
+
+            var dataToSave = {
+                cardType:    cardData.cardType   || 'student',
+                name:        (cardData.firstName || '') + ' ' + (cardData.lastName || ''),
+                firstName:   cardData.firstName  || '',
+                lastName:    cardData.lastName   || '',
+                rollNumber:  cardData.rollNumber || '',
+                department:  cardData.department || '',
+                semester:    cardData.semester   || '',
+                batch:       cardData.batch      || '',
+                bloodGroup:  cardData.bloodGroup || '',
+                phone:       cardData.phone      || '',
+                template:    cardData.template   || '',
+                email:       user.email          || '',
+                generatedBy: user.email          || 'unknown',
+                status:      'active'
+            };
+
+            var res = await fetch('/api/cards', {
+                method:  'POST',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Authorization': 'Bearer ' + tok
+                },
+                body: JSON.stringify(dataToSave)
+            });
+
+            var result = await res.json();
+
+            if (result.success) {
+                showSaveToast('Card saved! No: ' + result.cardNumber, 'ok');
+            } else {
+                showSaveToast('Save failed: ' + (result.error || 'Error'), 'err');
+            }
+        } catch(e) {
+            console.error('Save error:', e);
+            showSaveToast('Server error. server.js chal raha hai?', 'err');
+        }
+    }    
+    </script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NIT Bhubaneswar — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    :root{--primary:#FF6B35;--secondary:#F7931E;--darker:#0f0f1a;
+      --input-bg:rgba(255,255,255,0.06);--border:rgba(255,107,53,0.3);
+      --border-s:rgba(255,255,255,0.08);--muted:#8a9bb0;
+      --success:#4CAF50;--error:#f44336;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif;background:var(--darker);color:#f0f0f0;
+      min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+    .bg span{position:absolute;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,107,53,0.08),transparent 70%);
+      animation:fb 8s ease-in-out infinite}
+    .bg span:nth-child(1){width:600px;height:600px;top:-100px;left:-100px}
+    .bg span:nth-child(2){width:400px;height:400px;bottom:-80px;right:-80px;animation-delay:3s}
+    .bg span:nth-child(3){width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:5s}
+    @keyframes fb{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.1) translate(10px,-10px);opacity:1}}
+    .bg-grid{position:fixed;inset:0;z-index:0;
+      background-image:linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+      background-size:50px 50px}
+    .wrap{position:relative;z-index:10;width:100%;max-width:440px;padding:20px}
+    .hdr{text-align:center;margin-bottom:28px}
+    .hdr-logo{width:72px;height:72px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      border-radius:18px;display:inline-flex;align-items:center;justify-content:center;
+      font-size:32px;margin-bottom:12px;animation:pulse 3s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(255,107,53,0.3)}50%{box-shadow:0 0 40px rgba(255,107,53,0.6)}}
+    .hdr h1{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff}
+    .hdr p{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+    .card{background:rgba(30,42,69,0.9);border:1px solid var(--border);border-radius:20px;
+      padding:28px;backdrop-filter:blur(20px);
+      box-shadow:0 0 40px rgba(255,107,53,0.15),0 30px 80px rgba(0,0,0,0.5)}
+    .tabs{display:flex;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;margin-bottom:24px}
+    .tab{flex:1;padding:10px;border:none;background:none;color:var(--muted);
+      font-size:14px;font-weight:600;cursor:pointer;border-radius:8px;
+      transition:all .25s;font-family:'DM Sans',sans-serif}
+    .tab.on{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .step{display:none;animation:si .3s ease}.step.on{display:block}
+    @keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .fg{margin-bottom:14px}
+    .fg label{display:block;font-size:11px;font-weight:600;color:var(--muted);
+      text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+    .iw{position:relative}
+    .iw i.ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+      color:var(--muted);font-size:14px;pointer-events:none}
+    input,select{width:100%;padding:12px 14px 12px 40px;background:var(--input-bg);
+      border:1px solid var(--border-s);border-radius:10px;color:#fff;
+      font-size:14px;font-family:'DM Sans',sans-serif;outline:none;
+      transition:border-color .2s,box-shadow .2s}
+    input::placeholder{color:rgba(255,255,255,0.2)}
+    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,53,0.12)}
+    select option{background:#1e2a45}
+    .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px}
+    .gr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .otp-row{display:flex;gap:8px;justify-content:center}
+    .ob{width:48px;height:54px;background:var(--input-bg);border:1px solid var(--border-s);
+      border-radius:10px;color:#fff;font-size:22px;font-weight:700;text-align:center;
+      font-family:'Rajdhani',sans-serif;outline:none;padding:0;
+      transition:border-color .2s,box-shadow .2s}
+    .ob:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,53,0.15)}
+    .btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:600;
+      cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;
+      display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,53,0.4)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .gbtn{background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;
+      font-family:'DM Sans',sans-serif;font-weight:600;padding:0}
+    .gbtn:hover{text-decoration:underline}
+    .alert{padding:11px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;
+      display:none;align-items:center;gap:10px;line-height:1.5}
+    .alert.err{background:rgba(244,67,54,.12);color:var(--error);border:1px solid rgba(244,67,54,.3)}
+    .alert.ok{background:rgba(76,175,80,.12);color:var(--success);border:1px solid rgba(76,175,80,.3)}
+    .alert.inf{background:rgba(33,150,243,.12);color:#64b5f6;border:1px solid rgba(33,150,243,.3)}
+    .alert.show{display:flex}
+    .step-info{text-align:center;margin-bottom:18px}
+    .step-info h3{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:4px}
+    .step-info p{font-size:12px;color:var(--muted)}
+    .step-info .em{color:var(--primary);font-weight:600}
+    .timer{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+    .timer span{color:var(--primary);font-weight:600}
+    .div{display:flex;align-items:center;gap:12px;margin:16px 0}
+    .div::before,.div::after{content:'';flex:1;height:1px;background:var(--border-s)}
+    .div span{font-size:11px;color:var(--muted)}
+    .sp{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);
+      border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+    .sp.on{display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:13px 18px;
+      border-radius:12px;font-size:13px;font-weight:500;display:flex;align-items:center;
+      gap:10px;min-width:260px;transform:translateX(120%);transition:transform .3s ease}
+    #toast.show{transform:none}
+    #toast.ok{background:rgba(76,175,80,.95);color:#fff}
+    #toast.err{background:rgba(244,67,54,.95);color:#fff}
+    #toast.inf{background:rgba(33,150,243,.95);color:#fff}
+    .ft{text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
+    .ft strong{color:var(--primary)}
+  </style>
+</head>
+<body>
+<div class="bg"><span></span><span></span><span></span></div>
+<div class="bg-grid"></div>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-logo">🎓</div>
+    <h1>Nalanda Institute of Technology</h1>
+    <p>Bhubaneswar — ID Card System</p>
+  </div>
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" id="tl" onclick="switchTab('l')">Login</button>
+      <button class="tab" id="ts" onclick="switchTab('s')">Sign Up</button>
+    </div>
+    <div class="alert" id="alertBox">
+      <i class="fas fa-exclamation-circle"></i><span id="alertMsg"></span>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="LF">
+      <div class="step on" id="L1">
+        <div class="fg"><label>Email Address</label>
+          <div class="iw"><i class="fas fa-envelope ic"></i>
+            <input type="email" id="l_email" placeholder="your@email.com"/></div></div>
+        <div class="fg"><label>Password</label>
+          <div class="iw"><i class="fas fa-lock ic"></i>
+            <input type="password" id="l_pw" placeholder="Enter your password"/>
+            <button class="pw-eye" onclick="tpw('l_pw',this)" type="button"><i class="fas fa-eye"></i></button>
+          </div></div>
+        <button class="btn" id="lBtn" onclick="doLogin()" type="button">
+          <div class="sp" id="lSp"></div>
+          <i class="fas fa-arrow-right" id="lIc"></i><span>Continue</span>
+        </button>
+      </div>
+      <div class="step" id="L2">
+        <div class="step-info">
+          <h3>Verify Your Email</h3>
+          <p>OTP sent to <span class="em" id="l_emD"></span></p>
+        </div>
+        <div class="fg"><label>Enter 6-digit OTP</label>
+          <div class="otp-row" id="lOTP">
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+          </div></div>
+        <button class="btn" id="lvBtn" onclick="verifyLogin()" style="margin-top:8px" type="button">
+          <div class="sp" id="lvSp"></div>
+          <i class="fas fa-check" id="lvIc"></i><span>Verify & Login</span>
+        </button>
+        <div class="timer" id="lTmr">Resend in <span id="lTC">60</span>s</div>
+        <div style="text-align:center;margin-top:8px;display:none" id="lRW">
+          <button class="gbtn" onclick="resendOTP('login')" type="button">Resend OTP</button>
+        </div>
+        <div class="div"><span>or</span></div>
+        <div style="text-align:center"><button class="gbtn" onclick="goStep('L1','L2')" type="button">← Change email</button></div>
+      </div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="SF" style="display:none">
+      <div class="step on" id="S1">
+        <div class="gr2">
+          <div class="fg"><label>First Name</label>
+            <div class="iw"><i class="fas fa-user ic"></i>
+              <input type="text" id="s_fn" placeholder="First name"/></div></div>
+          <div class="fg"><label>Last Name</label>
+            <div class="iw"><i class="fas fa-user ic"></i>
+              <input type="text" id="s_ln" placeholder="Last name"/></div></div>
+        </div>
+        <div class="fg"><label>Email Address</label>
+          <div class="iw"><i class="fas fa-envelope ic"></i>
+            <input type="email" id="s_em" placeholder="your@email.com"/></div></div>
+        <div class="fg"><label>Role</label>
+          <div class="iw"><i class="fas fa-id-badge ic"></i>
+            <select id="s_role" onchange="roleChange()">
+              <option value="">Select your role</option>
+              <option value="student">Student</option>
+              <option value="faculty">Faculty</option>
+              <option value="staff">Staff</option>
+            </select></div></div>
+        <div id="stF" style="display:none">
+          <div class="gr2">
+            <div class="fg"><label>Roll Number</label>
+              <div class="iw"><i class="fas fa-hashtag ic"></i>
+                <input type="text" id="s_roll" placeholder="e.g. 22BCE001"/></div></div>
+            <div class="fg"><label>Branch</label>
+              <div class="iw"><i class="fas fa-book ic"></i>
+                <select id="s_branch">
+                  <option value="">Branch</option>
+                  <option>CSE</option><option>ECE</option><option>EEE</option>
+                  <option>ME</option><option>CE</option><option>IT</option>
+                  <option>CH</option><option>MME</option><option>BT</option>
+                </select></div></div>
+          </div>
+        </div>
+        <div id="fcF" style="display:none">
+          <div class="fg"><label>Department</label>
+            <div class="iw"><i class="fas fa-building ic"></i>
+              <input type="text" id="s_dept" placeholder="e.g. CSE / Administration"/></div></div>
+        </div>
+        <div class="fg"><label>Password</label>
+          <div class="iw"><i class="fas fa-lock ic"></i>
+            <input type="password" id="s_pw" placeholder="Min 6 characters"/>
+            <button class="pw-eye" onclick="tpw('s_pw',this)" type="button"><i class="fas fa-eye"></i></button>
+          </div></div>
+        <button class="btn" id="sBtn" onclick="doSignup()" type="button">
+          <div class="sp" id="sSp"></div>
+          <i class="fas fa-paper-plane" id="sIc"></i><span>Send OTP</span>
+        </button>
+      </div>
+      <div class="step" id="S2">
+        <div class="step-info">
+          <h3>Verify Your Email</h3>
+          <p>OTP sent to <span class="em" id="s_emD"></span></p>
+        </div>
+        <div class="fg"><label>Enter 6-digit OTP</label>
+          <div class="otp-row" id="sOTP">
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+            <input class="ob" maxlength="1" inputmode="numeric"/>
+          </div></div>
+        <button class="btn" id="svBtn" onclick="verifySignup()" style="margin-top:8px" type="button">
+          <div class="sp" id="svSp"></div>
+          <i class="fas fa-user-plus" id="svIc"></i><span>Create Account</span>
+        </button>
+        <div class="timer" id="sTmr">Resend in <span id="sTC">60</span>s</div>
+        <div style="text-align:center;margin-top:8px;display:none" id="sRW">
+          <button class="gbtn" onclick="resendOTP('signup')" type="button">Resend OTP</button>
+        </div>
+        <div class="div"><span>or</span></div>
+        <div style="text-align:center"><button class="gbtn" onclick="goStep('S1','S2')" type="button">← Edit details</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="ft">Nalanda Institute of Technology, Bhubaneswar<br/><strong>ID Card Management System</strong></div>
+</div>
+<div id="toast"><i id="tIc" class="fas fa-check-circle"></i><span id="tMsg"></span></div>
+
+<script>
+// EmailJS config
+const EJ = { KEY:"UIRa4qGn-SCty-a7N", SVC:"service_pvmcd9i", TPL:"template_lsu88ql" };
+emailjs.init(EJ.KEY);
+
+const API = '/api';
+let lOTP=null, sOTP=null, lTI=null, sTI=null, curTab='l';
+// Store verified user data after backend auth
+let verifiedUser = null;
+
+// ── TABS ──
+function switchTab(t){
+  curTab=t; clearAlert();
+  document.getElementById('LF').style.display = t==='l'?'block':'none';
+  document.getElementById('SF').style.display  = t==='s'?'block':'none';
+  document.getElementById('tl').classList.toggle('on', t==='l');
+  document.getElementById('ts').classList.toggle('on', t==='s');
+  if(t==='l') goStep('L1','L2'); else goStep('S1','S2');
+}
+function goStep(show,hide){
+  clearAlert();
+  document.getElementById(show).classList.add('on');
+  document.getElementById(hide).classList.remove('on');
+}
+function roleChange(){
+  const r=document.getElementById('s_role').value;
+  document.getElementById('stF').style.display = r==='student'?'block':'none';
+  document.getElementById('fcF').style.display = (r==='faculty'||r==='staff')?'block':'none';
+}
+
+// ── OTP HELPERS ──
+function genOTP(){ return Math.floor(100000+Math.random()*900000).toString(); }
+async function sendEmailOTP(toEmail, toName, otp){
+  return emailjs.send(EJ.SVC, EJ.TPL, {
+    to_email: toEmail, to_name: toName, otp_code: otp,
+    institute: 'Nalanda Institute of Technology, Bhubaneswar', valid_for: '10 minutes'
+  });
+}
+function startTimer(cntId, tmrId, rwId){
+  let s=60;
+  document.getElementById(cntId).textContent=s;
+  document.getElementById(tmrId).style.display='block';
+  document.getElementById(rwId).style.display='none';
+  const iv=setInterval(()=>{
+    s--; document.getElementById(cntId).textContent=s;
+    if(s<=0){ clearInterval(iv);
+      document.getElementById(tmrId).style.display='none';
+      document.getElementById(rwId).style.display='block'; }
+  },1000);
+  return iv;
+}
+function getOTP(gid){ return Array.from(document.querySelectorAll('#'+gid+' .ob')).map(i=>i.value).join(''); }
+function initBoxes(gid){
+  const bs=document.querySelectorAll('#'+gid+' .ob');
+  bs.forEach((b,i)=>{
+    b.value='';
+    b.oninput=()=>{ if(b.value&&i<bs.length-1) bs[i+1].focus(); };
+    b.onkeydown=e=>{ if(e.key==='Backspace'&&!b.value&&i>0) bs[i-1].focus(); };
+    b.onpaste=e=>{ e.preventDefault(); const p=e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
+      [...p].forEach((c,j)=>{ if(bs[j]) bs[j].value=c; }); if(bs[p.length-1]) bs[p.length-1].focus(); };
+  });
+  setTimeout(()=>bs[0].focus(), 100);
+}
+
+// ── UI ──
+function tpw(id,btn){
+  const el=document.getElementById(id), ic=btn.querySelector('i');
+  el.type=el.type==='password'?'text':'password';
+  ic.classList.toggle('fa-eye'); ic.classList.toggle('fa-eye-slash');
+}
+function setLoad(bId,spId,icId,on){
+  document.getElementById(bId).disabled=on;
+  document.getElementById(spId).classList.toggle('on',on);
+  const ic=document.getElementById(icId); if(ic) ic.style.display=on?'none':'inline';
+}
+function showAlert(msg,type='err'){
+  const b=document.getElementById('alertBox');
+  b.className='alert '+type+' show';
+  document.getElementById('alertMsg').textContent=msg;
+}
+function clearAlert(){ document.getElementById('alertBox').classList.remove('show'); }
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  const ic={ok:'fa-check-circle',err:'fa-times-circle',inf:'fa-info-circle'};
+  document.getElementById('tMsg').textContent=msg;
+  document.getElementById('tIc').className='fas '+(ic[type]||'fa-info-circle');
+  t.className='show '+type;
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+function saveSession(user, token){
+  sessionStorage.setItem('nit_token', token);
+  sessionStorage.setItem('nit_user', JSON.stringify(user));
+}
+
+// ══════════════════════════════════
+// LOGIN FLOW
+// ══════════════════════════════════
+async function doLogin(){
+  clearAlert();
+  const email = document.getElementById('l_email').value.trim().toLowerCase();
+  const pw    = document.getElementById('l_pw').value.trim();
+  if(!email||!pw){ showAlert('Email aur password dono bharo'); return; }
+
+  setLoad('lBtn','lSp','lIc',true);
+  try{
+    const res  = await fetch(API+'/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pw })
+    });
+    const data = await res.json();
+
+    if(!data.success){ showAlert(data.error||'Login failed'); setLoad('lBtn','lSp','lIc',false); return; }
+
+    // Admin → no OTP needed
+    if(data.user.role === 'superadmin'){
+      saveSession(data.user, data.token);
+      toast('Login successful!');
+      setTimeout(()=>window.location.href='admin.html', 800);
+      return;
+    }
+
+    // Send OTP for students/faculty/staff
+    verifiedUser = { ...data.user, token: data.token };
+    lOTP = genOTP();
+    try{
+      await sendEmailOTP(email, data.user.name||'User', lOTP);
+    } catch(ejErr){
+      // EmailJS fail — login directly without OTP (fallback)
+      console.warn('EmailJS failed, skipping OTP:', ejErr);
+      saveSession(data.user, data.token);
+      toast('Login successful!');
+      setTimeout(()=>window.location.href='Home.html', 800);
+      return;
+    }
+
+    document.getElementById('l_emD').textContent = email;
+    initBoxes('lOTP');
+    goStep('L2','L1');
+    clearInterval(lTI);
+    lTI = startTimer('lTC','lTmr','lRW');
+    toast('OTP sent! Email check karo.','inf');
+
+  } catch(e){
+    console.error(e);
+    showAlert('Server se connect nahi ho pa raha. server.js chal raha hai?');
+  }
+  setLoad('lBtn','lSp','lIc',false);
+}
+
+async function verifyLogin(){
+  clearAlert();
+  const entered = getOTP('lOTP');
+  if(entered.length<6){ showAlert('Poora 6-digit OTP bharo'); return; }
+  if(entered !== lOTP){ showAlert('OTP galat hai. Dobara check karo.'); return; }
+  setLoad('lvBtn','lvSp','lvIc',true);
+  clearInterval(lTI);
+  saveSession(verifiedUser, verifiedUser.token);
+  toast('Login successful! Redirecting...','ok');
+  setTimeout(()=>window.location.href='Home.html', 1000);
+}
+
+async function resendOTP(type){
+  if(type==='login'){
+    const email=document.getElementById('l_email').value.trim();
+    lOTP=genOTP(); sendEmailOTP(email,'User',lOTP);
+    clearInterval(lTI); lTI=startTimer('lTC','lTmr','lRW');
+  } else {
+    const email=document.getElementById('s_em').value.trim();
+    const fname=document.getElementById('s_fn').value.trim();
+    sOTP=genOTP(); sendEmailOTP(email,fname,sOTP);
+    clearInterval(sTI); sTI=startTimer('sTC','sTmr','sRW');
+  }
+  toast('OTP resent!','inf');
+}
+
+// ══════════════════════════════════
+// SIGNUP FLOW
+// ══════════════════════════════════
+async function doSignup(){
+  clearAlert();
+  const fn   = document.getElementById('s_fn').value.trim();
+  const ln   = document.getElementById('s_ln').value.trim();
+  const em   = document.getElementById('s_em').value.trim().toLowerCase();
+  const role = document.getElementById('s_role').value;
+  const pw   = document.getElementById('s_pw').value.trim();
+
+  if(!fn||!ln){ showAlert('Poora naam bharo'); return; }
+  if(!em||!/\S+@\S+\.\S+/.test(em)){ showAlert('Valid email dalo'); return; }
+  if(!role){ showAlert('Role select karo'); return; }
+  if(!pw||pw.length<6){ showAlert('Password minimum 6 characters hona chahiye'); return; }
+
+  setLoad('sBtn','sSp','sIc',true);
+  try{
+    // Send OTP first (before saving to DB)
+    sOTP = genOTP();
+    try{
+      await sendEmailOTP(em, fn, sOTP);
+    } catch(ejErr){
+      console.error('EmailJS error:', ejErr);
+      // Try to signup directly without OTP if EmailJS fails
+      await completeSignup(fn,ln,em,role,pw);
+      return;
+    }
+
+    document.getElementById('s_emD').textContent = em;
+    initBoxes('sOTP');
+    goStep('S2','S1');
+    clearInterval(sTI);
+    sTI = startTimer('sTC','sTmr','sRW');
+    toast('OTP sent! Email check karo.','inf');
+
+  } catch(e){
+    console.error(e);
+    showAlert('Error: '+e.message+'. Server chal raha hai?');
+  }
+  setLoad('sBtn','sSp','sIc',false);
+}
+
+async function verifySignup(){
+  clearAlert();
+  const entered = getOTP('sOTP');
+  if(entered.length<6){ showAlert('Poora 6-digit OTP bharo'); return; }
+  if(entered !== sOTP){ showAlert('OTP galat hai.'); return; }
+  setLoad('svBtn','svSp','svIc',true);
+
+  const fn   = document.getElementById('s_fn').value.trim();
+  const ln   = document.getElementById('s_ln').value.trim();
+  const em   = document.getElementById('s_em').value.trim().toLowerCase();
+  const role = document.getElementById('s_role').value;
+  const pw   = document.getElementById('s_pw').value.trim();
+  clearInterval(sTI);
+  await completeSignup(fn,ln,em,role,pw);
+}
+
+async function completeSignup(fn,ln,em,role,pw){
+  try{
+    const dept        = role==='student' ? (document.getElementById('s_branch')?.value||'') : (document.getElementById('s_dept')?.value||'');
+    const rollNumber  = role==='student' ? (document.getElementById('s_roll')?.value||'') : '';
+
+    const res  = await fetch(API+'/auth/signup', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ fname:fn, lname:ln, email:em, role, password:pw, dept, rollNumber })
+    });
+    const data = await res.json();
+
+    if(!data.success){ showAlert(data.error||'Signup failed'); setLoad('svBtn','svSp','svIc',false); setLoad('sBtn','sSp','sIc',false); return; }
+
+    saveSession(data.user, data.token);
+    toast('Account created! Welcome 🎉','ok');
+    setTimeout(()=>window.location.href='Home.html', 1000);
+  } catch(e){
+    showAlert('Server error: '+e.message);
+    setLoad('svBtn','svSp','svIc',false);
+    setLoad('sBtn','sSp','sIc',false);
+  }
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  if(curTab==='l'){ if(document.getElementById('L1').classList.contains('on')) doLogin(); else verifyLogin(); }
+  else            { if(document.getElementById('S1').classList.contains('on')) doSignup(); else verifySignup(); }
+});
+
+// ── INIT ──
+window.onload = function(){
+  const tok = sessionStorage.getItem('nit_token');
+  const u   = JSON.parse(sessionStorage.getItem('nit_user')||'{}');
+  if(tok){ window.location.href = (u.role==='superadmin'||u.role==='admin') ? 'admin.html' : 'Home.html'; }
+};
+</script>
+</body>
+</html>
