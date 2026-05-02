@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname)));
 // ── CONFIG ────────────────────────────────────────────────
 const MONGO_URI = "mongodb+srv://biswajitpanda721:Q2YegVMdJ8iqRbxO@nitidcard.vy7bph5.mongodb.net/?appName=nitidcard";
 const DB_NAME   = "nitdb";
-const PORT      = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Admin credentials
 const ADMIN_EMAIL = "admin@nitbbsr.ac.in";
